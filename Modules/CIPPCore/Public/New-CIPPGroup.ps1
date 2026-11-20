@@ -118,6 +118,10 @@ function New-CIPPGroup {
                 'isAssignableToRole' = ($NormalizedGroupType -eq 'AzureRole')
             }
 
+            if ($GroupObject.disableNesting -eq $true) {
+                $BodyParams | Add-Member -NotePropertyName 'disableNesting' -NotePropertyValue $true
+            }
+
             # Handle dynamic membership
             if ($GroupObject.membershipRules) {
                 $BodyParams | Add-Member -NotePropertyName 'membershipRule' -NotePropertyValue $GroupObject.membershipRules
@@ -170,6 +174,8 @@ function New-CIPPGroup {
 
             # Create the group via Graph API
             $GraphRequest = New-GraphPostRequest -uri 'https://graph.microsoft.com/beta/groups' -tenantid $TenantFilter -type POST -body (ConvertTo-Json -InputObject $BodyParams -Depth 10)
+            # A refused request (tenant not authorised) writes an error without throwing.
+            if (-not $GraphRequest.id) { throw 'Graph did not return the new group, so it was not created.' }
 
             $Result = [PSCustomObject]@{
                 Success   = $true

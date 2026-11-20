@@ -14,8 +14,9 @@ BeforeAll {
     }
 
     function Get-CippTable { param($tablename) @{} }
+    function Test-CippTemplateWriteAccess { param($Permission, $PartitionKey, $RowKey) $true }
     function Get-CIPPAzDataTableEntity { param($Filter, $Property) return [pscustomobject]@{ PartitionKey = 'IntuneReusableSettingTemplate'; RowKey = 'template-x' } }
-    function Remove-AzDataTableEntity { param([switch]$Force, $Entity) $script:lastRemoved = $Entity; $script:lastForce = $Force }
+    function Remove-CIPPAzDataTableEntity { param([switch]$Force, $Entity) $script:lastRemoved = $Entity; $script:lastForce = $Force }
     function Write-LogMessage { param($Headers, $API, $message, $sev, $LogData) $script:logs += $message }
     function Get-CippException { param($Exception) [pscustomobject]@{ NormalizedError = $Exception } }
     # The ID is sanitised for OData before the table lookup; stub it to pass the value through.
